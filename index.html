@@ -286,9 +286,6 @@
 
   <button onclick="showResults()">Voir les résultats</button>
 
-  <div class="result" id="result"></div>
-</div>
-
 <script>
   function showResults() {
     // Correct answers
@@ -298,22 +295,47 @@
       q16: "B", q17: "A", q18: "B", q19: "A", q20: "B"
     };
 
-    // Calculate score
     let score = 0;
     let totalQuestions = 20;
+    let incorrectAnswers = [];
 
+    // Check each question and compare to correct answers
     for (let i = 1; i <= totalQuestions; i++) {
       const question = document.querySelector(`input[name="q${i}"]:checked`);
-      if (question && question.value === correctAnswers[`q${i}`]) {
-        score++;
+      if (question) {
+        if (question.value === correctAnswers[`q${i}`]) {
+          score++;
+        } else {
+          incorrectAnswers.push({
+            question: i,
+            selected: question.value,
+            correct: correctAnswers[`q${i}`]
+          });
+        }
+      } else {
+        incorrectAnswers.push({
+          question: i,
+          selected: "Pas de réponse",
+          correct: correctAnswers[`q${i}`]
+        });
       }
     }
 
-    // Display results
+    // Display the score
     const resultElement = document.getElementById("result");
-    resultElement.innerHTML = `Vous avez ${score} bonnes réponses sur ${totalQuestions}.`;
+    let resultMessage = `<strong>Vous avez obtenu ${score} bonnes réponses sur ${totalQuestions}.</strong><br><br>`;
+
+    // Show detailed feedback for incorrect answers
+    if (incorrectAnswers.length > 0) {
+      resultMessage += "<h3>Correction des erreurs :</h3><ul>";
+      incorrectAnswers.forEach((item) => {
+        resultMessage += `<li>Question ${item.question}: 
+        Vous avez choisi <strong>${item.selected}</strong>. La bonne réponse est <strong>${item.correct}</strong>.</li>`;
+      });
+      resultMessage += "</ul>";
+    }
+
+    resultElement.innerHTML = resultMessage;
   }
 </script>
 
-</body>
-</html>
